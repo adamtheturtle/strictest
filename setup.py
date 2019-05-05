@@ -67,4 +67,8 @@ setup(
     #
     # Also, they require users to use ``--process-dependency-links``.
     dependency_links=[],
+    entry_points="""
+        [console_scripts]
+        strictest=strictest:strictest
+    """,
 )

@@ -9,11 +9,11 @@ import click
 
 
 @click.command(name='lint')
-def lint() -> None:
+@click.option('--skip', multiple=True)
+def lint(skip) -> None:
     """
     XXX
     """
-    # TODO add ignores
     isort_args = [
         'isort',
         '--recursive',
@@ -22,6 +22,10 @@ def lint() -> None:
         '--trailing-comma',
         '--dont-skip=__init__.py'
     ]
+    for item in skip:
+        isort_args.append(
+            '--skip=' + item
+        )
     isort_result = subprocess.run(args=isort_args)
     if not isort_result.returncode == 0:
         sys.exit(isort_result.returncode)

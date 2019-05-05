@@ -40,6 +40,17 @@ def lint_flake8(skip):
     if not flake8_result.returncode == 0:
         sys.exit(flake8_result.returncode)
 
+
+def lint_yapf(skip):
+    path = '.'
+    yapf_args = ['yapf', '--settings', settings_path, '--diff', '--recursive', path]
+    for item in skip:
+        yapf_args.append('--exclude=' + item)
+    yapf_result = subprocess.run(args=yapf_args)
+    if not yapf_result.returncode == 0:
+        sys.exit(yapf_result.returncode)
+
+
 @click.command(name='lint')
 @click.option('--skip', multiple=True)
 def lint(skip) -> None:
@@ -49,3 +60,4 @@ def lint(skip) -> None:
     lint_isort(skip=skip)
     lint_check_manifest(skip=skip)
     lint_flake8(skip=skip)
+    lint_yapf(skip=skip)

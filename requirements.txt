@@ -9,3 +9,4 @@ yapf==0.27.0
 vulture==1.0
 mypy==0.701
 pip_check_reqs==2.0.3
+click==7.0.0

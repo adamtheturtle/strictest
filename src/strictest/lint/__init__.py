@@ -13,6 +13,7 @@ def lint() -> None:
     """
     XXX
     """
+    # TODO add ignores
     isort_args = [
         'isort',
         '--recursive',

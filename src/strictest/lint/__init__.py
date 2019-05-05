@@ -5,8 +5,9 @@ XXX
 import subprocess
 import sys
 
-import click
 import check_manifest
+import click
+
 
 def lint_isort(skip):
     isort_args = [
@@ -15,12 +16,10 @@ def lint_isort(skip):
         '--check-only',
         '--multi-line=3',
         '--trailing-comma',
-        '--dont-skip=__init__.py'
+        '--dont-skip=__init__.py',
     ]
     for item in skip:
-        isort_args.append(
-            '--skip=' + item
-        )
+        isort_args.append('--skip=' + item)
     isort_result = subprocess.run(args=isort_args)
     if not isort_result.returncode == 0:
         sys.exit(isort_result.returncode)
@@ -30,6 +29,7 @@ def lint_check_manifest(skip):
     result = check_manifest.check_manifest()
     if not result:
         sys.exit(1)
+
 
 @click.command(name='lint')
 @click.option('--skip', multiple=True)

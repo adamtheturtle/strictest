@@ -68,7 +68,12 @@ def register_vcs_handler(vcs, method):  # decorator
 
 
 def run_command(
-    commands, args, cwd=None, verbose=False, hide_stderr=False, env=None
+    commands,
+    args,
+    cwd=None,
+    verbose=False,
+    hide_stderr=False,
+    env=None,
 ):
     """Call the given command(s)."""
     assert isinstance(commands, list)
@@ -82,7 +87,7 @@ def run_command(
                 cwd=cwd,
                 env=env,
                 stdout=subprocess.PIPE,
-                stderr=(subprocess.PIPE if hide_stderr else None)
+                stderr=(subprocess.PIPE if hide_stderr else None),
             )
             break
         except EnvironmentError:
@@ -125,7 +130,7 @@ def versions_from_parentdir(parentdir_prefix, root, verbose):
                 "full-revisionid": None,
                 "dirty": False,
                 "error": None,
-                "date": None
+                "date": None,
             }
         else:
             rootdirs.append(root)
@@ -134,7 +139,7 @@ def versions_from_parentdir(parentdir_prefix, root, verbose):
     if verbose:
         print(
             "Tried directories %s but none started with prefix %s" %
-            (str(rootdirs), parentdir_prefix)
+            (str(rootdirs), parentdir_prefix),
         )
     raise NotThisMethod("rootdir doesn't start with parentdir_prefix")
 
@@ -216,7 +221,7 @@ def git_versions_from_keywords(keywords, tag_prefix, verbose):
                 "full-revisionid": keywords["full"].strip(),
                 "dirty": False,
                 "error": None,
-                "date": date
+                "date": date,
             }
     # no suitable tags, so version is "0+unknown", but full hex is still there
     if verbose:
@@ -226,7 +231,7 @@ def git_versions_from_keywords(keywords, tag_prefix, verbose):
         "full-revisionid": keywords["full"].strip(),
         "dirty": False,
         "error": "no suitable tags",
-        "date": None
+        "date": None,
     }
 
 
@@ -243,7 +248,10 @@ def git_pieces_from_vcs(tag_prefix, root, verbose, run_command=run_command):
         GITS = ["git.cmd", "git.exe"]
 
     out, rc = run_command(
-        GITS, ["rev-parse", "--git-dir"], cwd=root, hide_stderr=True
+        GITS,
+        ["rev-parse", "--git-dir"],
+        cwd=root,
+        hide_stderr=True,
     )
     if rc != 0:
         if verbose:
@@ -253,11 +261,17 @@ def git_pieces_from_vcs(tag_prefix, root, verbose, run_command=run_command):
     # if there is a tag matching tag_prefix, this yields TAG-NUM-gHEX[-dirty]
     # if there isn't one, this yields HEX[-dirty] (no NUM)
     describe_out, rc = run_command(
-        GITS, [
-            "describe", "--tags", "--dirty", "--always", "--long", "--match",
-            "%s*" % tag_prefix
+        GITS,
+        [
+            "describe",
+            "--tags",
+            "--dirty",
+            "--always",
+            "--long",
+            "--match",
+            "%s*" % tag_prefix,
         ],
-        cwd=root
+        cwd=root,
     )
     # --long was added in git-1.5.5
     if describe_out is None:
@@ -318,13 +332,18 @@ def git_pieces_from_vcs(tag_prefix, root, verbose, run_command=run_command):
         # HEX: no tags
         pieces["closest-tag"] = None
         count_out, rc = run_command(
-            GITS, ["rev-list", "HEAD", "--count"], cwd=root
+            GITS,
+            ["rev-list", "HEAD", "--count"],
+            cwd=root,
         )
         pieces["distance"] = int(count_out)  # total number of commits
 
     # commit date: see ISO-8601 comment in git_versions_from_keywords()
-    date = run_command(GITS, ["show", "-s", "--format=%ci", "HEAD"],
-                       cwd=root)[0].strip()
+    date = run_command(
+        GITS,
+        ["show", "-s", "--format=%ci", "HEAD"],
+        cwd=root,
+    )[0].strip()
     pieces["date"] = date.strip().replace(" ", "T", 1).replace(" ", "", 1)
 
     return pieces
@@ -474,7 +493,7 @@ def render(pieces, style):
             "full-revisionid": pieces.get("long"),
             "dirty": None,
             "error": pieces["error"],
-            "date": None
+            "date": None,
         }
 
     if not style or style == "default":
@@ -500,7 +519,7 @@ def render(pieces, style):
         "full-revisionid": pieces["long"],
         "dirty": pieces["dirty"],
         "error": None,
-        "date": pieces.get("date")
+        "date": pieces.get("date"),
     }
 
 
@@ -516,7 +535,9 @@ def get_versions():
 
     try:
         return git_versions_from_keywords(
-            get_keywords(), cfg.tag_prefix, verbose
+            get_keywords(),
+            cfg.tag_prefix,
+            verbose,
         )
     except NotThisMethod:
         pass
@@ -534,7 +555,7 @@ def get_versions():
             "full-revisionid": None,
             "dirty": None,
             "error": "unable to find root of source tree",
-            "date": None
+            "date": None,
         }
 
     try:
@@ -554,5 +575,5 @@ def get_versions():
         "full-revisionid": None,
         "dirty": None,
         "error": "unable to compute version",
-        "date": None
+        "date": None,
     }

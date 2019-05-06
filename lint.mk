@@ -2,10 +2,6 @@
 
 SHELL := /bin/bash -euxo pipefail
 
-.PHONY: yapf
-yapf:
-	yapf --diff --recursive .
-
 .PHONY: fix-yapf
 fix-yapf:
 	yapf --in-place --recursive .
@@ -13,18 +9,6 @@ fix-yapf:
 .PHONY: mypy
 mypy:
 	mypy *.py src/ admin/
-
-.PHONY: check-manifest
-check-manifest:
-	check-manifest .
-
-.PHONY: flake8
-flake8:
-	flake8 .
-
-.PHONY: isort
-isort:
-	isort --recursive --check-only
 
 .PHONY: pip-extra-reqs
 pip-extra-reqs:
@@ -49,6 +33,13 @@ vulture:
 .PHONY: shellcheck
 shellcheck:
 	shellcheck --exclude SC2164,SC1091 admin/*.sh
+
+.PHONY: strictest
+shellcheck:
+	strictest lint \
+		--skip='**/_vendor' \
+		--skip='versioneer.py' \
+		--skip="**/_version.py"
 
 .PHONY: autoflake
 autoflake:

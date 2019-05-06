@@ -6,17 +6,14 @@ include lint.mk
 .PHONY: lint
 # We do not currently run pydocstyle as we have to ignore vendored items.
 lint: \
-    check-manifest \
-    flake8 \
-    isort \
+	strictest \
     mypy \
     pip-extra-reqs \
     pip-missing-reqs \
     pylint \
     pyroma \
     shellcheck \
-    vulture \
-    yapf
+    vulture
 
 # Fix some linting errors.
 .PHONY: fix-lint

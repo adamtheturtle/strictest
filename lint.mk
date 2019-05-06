@@ -33,10 +33,6 @@ pylint:
 pyroma:
 	pyroma --min 10 .
 
-.PHONY: vulture
-vulture:
-	vulture --min-confidence 100 --exclude _vendor .
-
 .PHONY: shellcheck
 shellcheck:
 	shellcheck --exclude SC2164,SC1091 admin/*.sh

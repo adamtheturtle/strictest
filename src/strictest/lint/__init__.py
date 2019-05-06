@@ -10,6 +10,7 @@ import click
 
 
 def lint_isort(skip):
+    path = '.'
     isort_args = [
         'isort',
         '--recursive',
@@ -18,6 +19,7 @@ def lint_isort(skip):
         '--multi-line=3',
         '--trailing-comma',
         '--dont-skip=__init__.py',
+        path,
     ]
     for item in skip:
         isort_args.append('--skip-glob=' + item)
@@ -27,13 +29,15 @@ def lint_isort(skip):
 
 
 def lint_check_manifest(skip):
-    result = check_manifest.check_manifest()
+    path = '.'
+    result = check_manifest.check_manifest(path)
     if not result:
         sys.exit(1)
 
 
 def lint_flake8(skip):
-    flake8_args = ['flake8']
+    path = '.'
+    flake8_args = ['flake8', path]
     if skip:
         flake8_args.append('--exclude=' + ','.join(skip))
     flake8_result = subprocess.run(args=flake8_args)

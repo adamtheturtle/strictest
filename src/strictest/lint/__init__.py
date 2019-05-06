@@ -53,7 +53,6 @@ def lint_yapf(skip) -> None:
     ]
     for item in skip:
         yapf_args.append('--exclude=' + item)
-    print(' '.join(yapf_args))
     yapf_result = subprocess.run(args=yapf_args)
     if not yapf_result.returncode == 0:
         sys.exit(yapf_result.returncode)

@@ -42,12 +42,11 @@ def lint_flake8(skip):
         sys.exit(flake8_result.returncode)
 
 
-def lint_yapf(skip):
+def lint_yapf(skip) -> None:
     path = '.'
     yapf_args = [
         'yapf',
-        '--style',
-        json.dumps({'DEDENT_CLOSING_BRACKETS': True}),
+        '--style="{DEDENT_CLOSING_BRACKETS: true}"',
         '--diff',
         '--recursive',
         path,

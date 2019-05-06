@@ -9,8 +9,7 @@ import check_manifest
 import click
 
 
-def lint_isort(skip):
-    path = '.'
+def lint_isort(skip, path):
     isort_args = [
         'isort',
         '--recursive',
@@ -28,15 +27,13 @@ def lint_isort(skip):
         sys.exit(isort_result.returncode)
 
 
-def lint_check_manifest(skip):
-    path = '.'
+def lint_check_manifest(skip, path):
     result = check_manifest.check_manifest(path)
     if not result:
         sys.exit(1)
 
 
-def lint_flake8(skip):
-    path = '.'
+def lint_flake8(skip, path):
     flake8_args = ['flake8', path]
     if skip:
         flake8_args.append('--exclude=' + ','.join(skip))
@@ -45,8 +42,7 @@ def lint_flake8(skip):
         sys.exit(flake8_result.returncode)
 
 
-def lint_yapf(skip) -> None:
-    path = '.'
+def lint_yapf(skip, path) -> None:
     yapf_args = [
         'yapf',
         '--style',
@@ -62,8 +58,7 @@ def lint_yapf(skip) -> None:
         sys.exit(yapf_result.returncode)
 
 
-def lint_vulture(skip):
-    path = '.'
+def lint_vulture(skip, path):
     vulture_args = [
         'vulture',
         '--min-confidence=100',
@@ -76,8 +71,7 @@ def lint_vulture(skip):
         sys.exit(vulture_result.returncode)
 
 
-def lint_pyroma(skip):
-    path = '.'
+def lint_pyroma(skip, path):
     pyroma_args = [
         'pyroma',
         '--min=10',
@@ -94,9 +88,10 @@ def lint(skip) -> None:
     """
     XXX
     """
-    lint_isort(skip=skip)
-    lint_check_manifest(skip=skip)
-    lint_flake8(skip=skip)
-    lint_yapf(skip=skip)
-    lint_vulture(skip=skip)
-    lint_pyroma(skip=skip)
+    path = '.'
+    lint_isort(skip=skip, path=path)
+    lint_check_manifest(skip=skip, path=path)
+    lint_flake8(skip=skip, path=path)
+    lint_yapf(skip=skip, path=path)
+    lint_vulture(skip=skip, path=path)
+    lint_pyroma(skip=skip, path=path)

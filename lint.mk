@@ -29,17 +29,12 @@ pip-missing-reqs:
 pylint:
 	pylint *.py src/ tests/ admin/
 
-.PHONY: pyroma
-pyroma:
-	pyroma --min 10 .
-
 .PHONY: shellcheck
 shellcheck:
 	shellcheck --exclude SC2164,SC1091 admin/*.sh
 
 .PHONY: strictest
 strictest:
-	strictest:
 	strictest lint \
 	    --skip='**/_vendor/*' \
 	    --skip='versioneer.py' \

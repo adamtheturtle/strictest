@@ -72,6 +72,18 @@ def lint_vulture(skip):
         sys.exit(vulture_result.returncode)
 
 
+def lint_pyroma(skip):
+    path = '.'
+    pyroma_args = [
+        'pyroma',
+        '--min=10',
+        path,
+    ]
+    pyroma_result = subprocess.run(args=pyroma_args)
+    if not pyroma_result.returncode == 0:
+        sys.exit(pyroma_result.returncode)
+
+
 @click.command(name='lint')
 @click.option('--skip', multiple=True)
 def lint(skip) -> None:
@@ -83,3 +95,4 @@ def lint(skip) -> None:
     lint_flake8(skip=skip)
     lint_yapf(skip=skip)
     lint_vulture(skip=skip)
+    lint_pyroma(skip=skip)

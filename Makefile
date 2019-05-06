@@ -11,7 +11,6 @@ lint: \
     pip-extra-reqs \
     pip-missing-reqs \
     pylint \
-    pyroma \
     shellcheck
 
 # Fix some linting errors.

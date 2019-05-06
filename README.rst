@@ -19,6 +19,16 @@ Usage
 
 XXX
 
+Not intended to be configurable
+
+Skipping
+~~~~~~~~
+
+Not all the same, but glob patterns work.
+
+Running individual linters
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Credits
 -------
 

@@ -58,6 +58,9 @@ def lint_yapf(skip) -> None:
         sys.exit(yapf_result.returncode)
 
 
+def lint_vulture(skip):
+    pass
+
 @click.command(name='lint')
 @click.option('--skip', multiple=True)
 def lint(skip) -> None:
@@ -68,3 +71,4 @@ def lint(skip) -> None:
     lint_check_manifest(skip=skip)
     lint_flake8(skip=skip)
     lint_yapf(skip=skip)
+    lint_vulture(skip=skip)

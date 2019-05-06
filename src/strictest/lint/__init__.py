@@ -2,6 +2,7 @@
 XXX
 """
 
+import json
 import subprocess
 import sys
 
@@ -43,9 +44,17 @@ def lint_flake8(skip):
 
 def lint_yapf(skip):
     path = '.'
-    yapf_args = ['yapf', '--settings', settings_path, '--diff', '--recursive', path]
+    yapf_args = [
+        'yapf',
+        '--style',
+        json.dumps({'DEDENT_CLOSING_BRACKETS': True}),
+        '--diff',
+        '--recursive',
+        path,
+    ]
     for item in skip:
         yapf_args.append('--exclude=' + item)
+    print(' '.join(yapf_args))
     yapf_result = subprocess.run(args=yapf_args)
     if not yapf_result.returncode == 0:
         sys.exit(yapf_result.returncode)

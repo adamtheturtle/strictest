@@ -4,7 +4,14 @@ SHELL := /bin/bash -euxo pipefail
 
 .PHONY: fix-yapf
 fix-yapf:
-	yapf --in-place --recursive .
+	yapf \
+		--style='{DEDENT_CLOSING_BRACKETS: true}' \
+		--in-place \
+		--recursive \
+		--exclude='**/_vendor' \
+		--exclude='versioneer.py' \
+		--exclude='**/_version.py' \
+		.
 
 .PHONY: mypy
 mypy:
@@ -35,7 +42,7 @@ shellcheck:
 	shellcheck --exclude SC2164,SC1091 admin/*.sh
 
 .PHONY: strictest
-shellcheck:
+strictest:
 	strictest lint \
 		--skip='**/_vendor' \
 		--skip='versioneer.py' \

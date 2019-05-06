@@ -59,7 +59,18 @@ def lint_yapf(skip) -> None:
 
 
 def lint_vulture(skip):
-    pass
+    path = '.'
+    vulture_args = [
+        'vulture',
+        '--min-confidence=100',
+        path,
+    ]
+    for item in skip:
+        vulture_args.append('--exclude=' + item)
+    vulture_result = subprocess.run(args=vulture_args)
+    if not vulture_result.returncode == 0:
+        sys.exit(vulture_result.returncode)
+
 
 @click.command(name='lint')
 @click.option('--skip', multiple=True)

@@ -12,8 +12,7 @@ lint: \
     pip-missing-reqs \
     pylint \
     pyroma \
-    shellcheck \
-    vulture
+    shellcheck
 
 # Fix some linting errors.
 .PHONY: fix-lint

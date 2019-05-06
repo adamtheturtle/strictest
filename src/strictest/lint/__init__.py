@@ -65,8 +65,8 @@ def lint_vulture(skip):
         '--min-confidence=100',
         path,
     ]
-    for item in skip:
-        vulture_args.append('--exclude=' + item)
+    if skip:
+        vulture_args.append('--exclude=' + ','.join(skip))
     vulture_result = subprocess.run(args=vulture_args)
     if not vulture_result.returncode == 0:
         sys.exit(vulture_result.returncode)

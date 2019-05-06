@@ -65,7 +65,7 @@ def lint(skip) -> None:
     """
     XXX
     """
-    # lint_isort(skip=skip)
-    # lint_check_manifest(skip=skip)
-    # lint_flake8(skip=skip)
+    lint_isort(skip=skip)
+    lint_check_manifest(skip=skip)
+    lint_flake8(skip=skip)
     lint_yapf(skip=skip)

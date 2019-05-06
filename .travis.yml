@@ -15,5 +15,5 @@ install:
 - travis_retry pip install --upgrade --editable .[dev]
 cache: pip
 script:
-- strictest lint --skip='_vendor' --skip='versioneer.py' --skip='_version.py'
+- strictest lint --skip='**/_vendor' --skip='versioneer.py'  --skip="**/_version.py"
 - strictest fix

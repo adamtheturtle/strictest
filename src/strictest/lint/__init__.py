@@ -82,6 +82,17 @@ def lint_pyroma(skip, path):
         sys.exit(pyroma_result.returncode)
 
 
+def lint_pip_extra_reqs(skip, path):
+    """
+    XXX
+    """
+    src_path = path
+    pip_extra_reqs_args = ['pip-extra-reqs', src_path]
+    pip_extra_reqs_result = subprocess.run(args=pip_extra_reqs_args)
+    if not pip_extra_reqs_result.returncode == 0:
+        sys.exit(pip_extra_reqs_result.returncode)
+
+
 @click.command(name='lint')
 @click.option('--skip', multiple=True)
 def lint(skip) -> None:
@@ -89,9 +100,10 @@ def lint(skip) -> None:
     XXX
     """
     path = '.'
-    lint_isort(skip=skip, path=path)
-    lint_check_manifest(skip=skip, path=path)
-    lint_flake8(skip=skip, path=path)
-    lint_yapf(skip=skip, path=path)
-    lint_vulture(skip=skip, path=path)
-    lint_pyroma(skip=skip, path=path)
+    # lint_isort(skip=skip, path=path)
+    # lint_check_manifest(skip=skip, path=path)
+    # lint_flake8(skip=skip, path=path)
+    # lint_yapf(skip=skip, path=path)
+    # lint_vulture(skip=skip, path=path)
+    # lint_pyroma(skip=skip, path=path)
+    lint_pip_extra_reqs(skip=skip, path=path)

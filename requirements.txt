@@ -10,3 +10,4 @@ vulture==1.0
 mypy==0.701
 pip_check_reqs==2.0.3
 click==7.0.0
+click_pathlib==2019.4.30.2

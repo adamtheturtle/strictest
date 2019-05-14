@@ -32,11 +32,13 @@ def lint_pydocstyle(skip, path, src, tests) -> None:
         path_and_details, issue = pair
         path = path_and_details.split(':')[0]
         path = Path(path).relative_to('.')
+        location = path_and_details.split(':')[1]
         if not any(
             fnmatch.fnmatch(str(path), skip_pattern)
             for skip_pattern in skip
         ):
             sys.stderr.write(str(path) + '\n')
+            sys.stderr.write('\tLine ' + location + '\n')
             sys.stderr.write(issue + '\n')
             real_errors.append(pair)
 

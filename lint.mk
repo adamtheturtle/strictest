@@ -17,14 +17,6 @@ fix-yapf:
 mypy:
 	mypy *.py src/ admin/
 
-.PHONY: pip-extra-reqs
-pip-extra-reqs:
-	pip-extra-reqs src/
-
-.PHONY: pip-missing-reqs
-pip-missing-reqs:
-	pip-missing-reqs src/
-
 .PHONY: pylint
 pylint:
 	pylint *.py src/ tests/ admin/

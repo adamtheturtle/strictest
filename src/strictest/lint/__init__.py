@@ -96,6 +96,19 @@ def lint_pip_extra_reqs(skip, path, src):
         sys.exit(pip_extra_reqs_result.returncode)
 
 
+def lint_pip_missing_reqs(skip, path, src):
+    """
+    XXX
+    """
+    pip_missing_reqs_args = [
+        'pip-missing-reqs',
+        ' '.join([str(item) for item in src]),
+    ]
+    pip_missing_reqs_result = subprocess.run(args=pip_missing_reqs_args)
+    if not pip_missing_reqs_result.returncode == 0:
+        sys.exit(pip_missing_reqs_result.returncode)
+
+
 @click.command(name='lint')
 @click.option('--skip', multiple=True)
 @click.option(
@@ -122,3 +135,4 @@ def lint(skip, src) -> None:
     lint_vulture(skip=skip, path=path, src=src)
     lint_pyroma(skip=skip, path=path, src=src)
     lint_pip_extra_reqs(skip=skip, path=path, src=src)
+    lint_pip_missing_reqs(skip=skip, path=path, src=src)

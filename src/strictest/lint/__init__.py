@@ -2,15 +2,50 @@
 XXX
 """
 
+import fnmatch
 import subprocess
 import sys
+from pathlib import Path
 
 import check_manifest
 import click
 import click_pathlib
 
 
-def lint_isort(skip, path, src):
+def lint_init_files(skip, path, src, tests) -> None:
+    """
+    ``__init__`` files exist where they should do.
+
+    If ``__init__`` files are missing, linters may not run on all files that
+    they should run on.
+    """
+    missing_files = set()
+    directories = src + tests
+    for directory in directories:
+        files = directory.glob('**/*.py')
+        for python_file in files:
+            parent = python_file.parent
+            expected_init = parent / '__init__.py'
+            if not expected_init.exists():
+                if not any(
+                    fnmatch.fnmatch(str(python_file), skip_pattern)
+                    for skip_pattern in skip
+                ):
+                    missing_files.add(expected_init)
+
+    if missing_files:
+        for expected_init in missing_files:
+            message = (
+                '`__init__.py` files are expected next to Python files. '
+                'The file "{expected_init}" was expected and it does not '
+                'exist.\n'
+            ).format(expected_init=expected_init)
+            sys.stderr.write(message)
+    if missing_files:
+        sys.exit(1)
+
+
+def lint_isort(skip, path, src, tests):
     isort_args = [
         'isort',
         '--recursive',
@@ -28,13 +63,13 @@ def lint_isort(skip, path, src):
         sys.exit(isort_result.returncode)
 
 
-def lint_check_manifest(skip, path, src):
+def lint_check_manifest(skip, path, src, tests):
     result = check_manifest.check_manifest(path)
     if not result:
         sys.exit(1)
 
 
-def lint_flake8(skip, path, src):
+def lint_flake8(skip, path, src, tests):
     flake8_args = ['flake8', path]
     if skip:
         flake8_args.append('--exclude=' + ','.join(skip))
@@ -43,7 +78,7 @@ def lint_flake8(skip, path, src):
         sys.exit(flake8_result.returncode)
 
 
-def lint_yapf(skip, path, src) -> None:
+def lint_yapf(skip, path, src, tests) -> None:
     yapf_args = [
         'yapf',
         '--style',
@@ -59,7 +94,7 @@ def lint_yapf(skip, path, src) -> None:
         sys.exit(yapf_result.returncode)
 
 
-def lint_vulture(skip, path, src):
+def lint_vulture(skip, path, src, tests):
     vulture_args = [
         'vulture',
         '--min-confidence=100',
@@ -72,7 +107,7 @@ def lint_vulture(skip, path, src):
         sys.exit(vulture_result.returncode)
 
 
-def lint_pyroma(skip, path, src):
+def lint_pyroma(skip, path, src, tests):
     pyroma_args = [
         'pyroma',
         '--min=10',
@@ -83,7 +118,7 @@ def lint_pyroma(skip, path, src):
         sys.exit(pyroma_result.returncode)
 
 
-def lint_pip_extra_reqs(skip, path, src):
+def lint_pip_extra_reqs(skip, path, src, tests):
     """
     XXX
     """
@@ -96,7 +131,7 @@ def lint_pip_extra_reqs(skip, path, src):
         sys.exit(pip_extra_reqs_result.returncode)
 
 
-def lint_pip_missing_reqs(skip, path, src):
+def lint_pip_missing_reqs(skip, path, src, tests):
     """
     XXX
     """
@@ -123,16 +158,29 @@ def lint_pip_missing_reqs(skip, path, src):
         resolve_path=True,
     ),
 )
-def lint(skip, src) -> None:
+@click.option(
+    '--tests',
+    multiple=True,
+    default=('tests', ),
+    help='Path to test directories',
+    type=click_pathlib.Path(
+        exists=True,
+        dir_okay=True,
+        file_okay=False,
+        resolve_path=True,
+    ),
+)
+def lint(skip, src, tests) -> None:
     """
     XXX
     """
-    path = '.'
-    lint_isort(skip=skip, path=path, src=src)
-    lint_check_manifest(skip=skip, path=path, src=src)
-    lint_flake8(skip=skip, path=path, src=src)
-    lint_yapf(skip=skip, path=path, src=src)
-    lint_vulture(skip=skip, path=path, src=src)
-    lint_pyroma(skip=skip, path=path, src=src)
-    lint_pip_extra_reqs(skip=skip, path=path, src=src)
-    lint_pip_missing_reqs(skip=skip, path=path, src=src)
+    path = Path('.')
+    lint_init_files(skip=skip, path=path, src=src, tests=tests)
+    lint_isort(skip=skip, path=path, src=src, tests=tests)
+    lint_check_manifest(skip=skip, path=path, src=src, tests=tests)
+    lint_flake8(skip=skip, path=path, src=src, tests=tests)
+    lint_yapf(skip=skip, path=path, src=src, tests=tests)
+    lint_vulture(skip=skip, path=path, src=src, tests=tests)
+    lint_pyroma(skip=skip, path=path, src=src, tests=tests)
+    lint_pip_extra_reqs(skip=skip, path=path, src=src, tests=tests)
+    lint_pip_missing_reqs(skip=skip, path=path, src=src, tests=tests)

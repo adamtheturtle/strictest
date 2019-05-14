@@ -9,6 +9,7 @@ from pathlib import Path
 import check_manifest
 import click
 import click_pathlib
+import fnmatch
 
 
 def lint_init_files(skip, path, src) -> None:
@@ -19,13 +20,15 @@ def lint_init_files(skip, path, src) -> None:
     they should run on.
     """
     missing_files = set()
-    for directory in path:
+    directories = (path, )
+    for directory in directories:
         files = directory.glob('**/*.py')
         for python_file in files:
             parent = python_file.parent
             expected_init = parent / '__init__.py'
             if not expected_init.exists():
-                missing_files.add(expected_init)
+                if not any(fnmatch.fnmatch(str(python_file), skip_pattern) for skip_pattern in skip):
+                    missing_files.add(expected_init)
 
     if missing_files:
         for expected_init in missing_files:

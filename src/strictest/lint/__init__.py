@@ -4,10 +4,28 @@ XXX
 
 import subprocess
 import sys
+from pathlib import Path
 
 import check_manifest
 import click
 import click_pathlib
+
+
+def lint_init_files(skip, path, src) -> None:
+    """
+    ``__init__`` files exist where they should do.
+
+    If ``__init__`` files are missing, linters may not run on all files that
+    they should run on.
+    """
+    directories = (Path('src'), Path('tests'))
+
+    for directory in directories:
+        files = directory.glob('**/*.py')
+        for python_file in files:
+            parent = python_file.parent
+            expected_init = parent / '__init__.py'
+            assert expected_init.exists()
 
 
 def lint_isort(skip, path, src):
@@ -128,6 +146,7 @@ def lint(skip, src) -> None:
     XXX
     """
     path = '.'
+    lint_init_files(skip=skip, path=path, src=src)
     lint_isort(skip=skip, path=path, src=src)
     lint_check_manifest(skip=skip, path=path, src=src)
     lint_flake8(skip=skip, path=path, src=src)

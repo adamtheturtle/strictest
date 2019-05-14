@@ -17,14 +17,6 @@ fix-yapf:
 mypy:
 	mypy *.py src/ admin/
 
-.PHONY: pip-extra-reqs
-pip-extra-reqs:
-	pip-extra-reqs src/
-
-.PHONY: pip-missing-reqs
-pip-missing-reqs:
-	pip-missing-reqs src/
-
 .PHONY: pylint
 pylint:
 	pylint *.py src/ tests/ admin/
@@ -38,7 +30,8 @@ strictest:
 	strictest lint \
 	    --skip='**/_vendor/*' \
 	    --skip='versioneer.py' \
-	    --skip="**/_version.py"
+	    --skip='**/_version.py' \
+	    --src='src'
 
 .PHONY: autoflake
 autoflake:

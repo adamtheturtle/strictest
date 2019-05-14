@@ -8,8 +8,6 @@ include lint.mk
 lint: \
     strictest \
     mypy \
-    pip-extra-reqs \
-    pip-missing-reqs \
     pylint \
     shellcheck
 

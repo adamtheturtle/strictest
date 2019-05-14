@@ -2,6 +2,7 @@
 XXX
 """
 
+import fnmatch
 import subprocess
 import sys
 from pathlib import Path
@@ -9,7 +10,6 @@ from pathlib import Path
 import check_manifest
 import click
 import click_pathlib
-import fnmatch
 
 
 def lint_init_files(skip, path, src) -> None:
@@ -20,14 +20,16 @@ def lint_init_files(skip, path, src) -> None:
     they should run on.
     """
     missing_files = set()
-    directories = (path, )
-    for directory in directories:
+    for directory in src:
         files = directory.glob('**/*.py')
         for python_file in files:
             parent = python_file.parent
             expected_init = parent / '__init__.py'
             if not expected_init.exists():
-                if not any(fnmatch.fnmatch(str(python_file), skip_pattern) for skip_pattern in skip):
+                if not any(
+                    fnmatch.fnmatch(str(python_file), skip_pattern)
+                    for skip_pattern in skip
+                ):
                     missing_files.add(expected_init)
 
     if missing_files:
@@ -161,11 +163,11 @@ def lint(skip, src) -> None:
     """
     path = Path('.')
     lint_init_files(skip=skip, path=path, src=src)
-    # lint_isort(skip=skip, path=path, src=src)
-    # lint_check_manifest(skip=skip, path=path, src=src)
-    # lint_flake8(skip=skip, path=path, src=src)
-    # lint_yapf(skip=skip, path=path, src=src)
-    # lint_vulture(skip=skip, path=path, src=src)
-    # lint_pyroma(skip=skip, path=path, src=src)
-    # lint_pip_extra_reqs(skip=skip, path=path, src=src)
-    # lint_pip_missing_reqs(skip=skip, path=path, src=src)
+    lint_isort(skip=skip, path=path, src=src)
+    lint_check_manifest(skip=skip, path=path, src=src)
+    lint_flake8(skip=skip, path=path, src=src)
+    lint_yapf(skip=skip, path=path, src=src)
+    lint_vulture(skip=skip, path=path, src=src)
+    lint_pyroma(skip=skip, path=path, src=src)
+    lint_pip_extra_reqs(skip=skip, path=path, src=src)
+    lint_pip_missing_reqs(skip=skip, path=path, src=src)

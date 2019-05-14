@@ -18,9 +18,7 @@ def lint_init_files(skip, path, src) -> None:
     If ``__init__`` files are missing, linters may not run on all files that
     they should run on.
     """
-    directories = (Path('src'), Path('tests'))
-
-    for directory in directories:
+    for directory in src:
         files = directory.glob('**/*.py')
         for python_file in files:
             parent = python_file.parent
@@ -147,11 +145,11 @@ def lint(skip, src) -> None:
     """
     path = '.'
     lint_init_files(skip=skip, path=path, src=src)
-    lint_isort(skip=skip, path=path, src=src)
-    lint_check_manifest(skip=skip, path=path, src=src)
-    lint_flake8(skip=skip, path=path, src=src)
-    lint_yapf(skip=skip, path=path, src=src)
-    lint_vulture(skip=skip, path=path, src=src)
-    lint_pyroma(skip=skip, path=path, src=src)
-    lint_pip_extra_reqs(skip=skip, path=path, src=src)
-    lint_pip_missing_reqs(skip=skip, path=path, src=src)
+    # lint_isort(skip=skip, path=path, src=src)
+    # lint_check_manifest(skip=skip, path=path, src=src)
+    # lint_flake8(skip=skip, path=path, src=src)
+    # lint_yapf(skip=skip, path=path, src=src)
+    # lint_vulture(skip=skip, path=path, src=src)
+    # lint_pyroma(skip=skip, path=path, src=src)
+    # lint_pip_extra_reqs(skip=skip, path=path, src=src)
+    # lint_pip_missing_reqs(skip=skip, path=path, src=src)

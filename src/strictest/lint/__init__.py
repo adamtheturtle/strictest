@@ -18,7 +18,7 @@ def lint_pydocstyle(skip, path, src, tests) -> None:
     We could use the "match" ``pydocstyle`` setting, but this involves regular
     expressions and got too complex.
     """
-    args = ['pydocstyle']
+    args = ['pydocstyle', str(path)]
     pydocstyle_result = subprocess.run(args=args, stdout=subprocess.PIPE)
     lines = pydocstyle_result.stdout.decode().strip().split('\n')
     path_issue_pairs = []
@@ -28,21 +28,15 @@ def lint_pydocstyle(skip, path, src, tests) -> None:
         path_issue_pairs.append((path, issue))
 
     real_errors = []
-    ignored_path_substrings = (
-        '_vendor',
-        '_version.py',
-        'versioneer.py',
-        './tests',
-    )
     for pair in path_issue_pairs:
-        path, issue = pair
-        ignore = False
-        for substring in ignored_path_substrings:
-            if substring in path:
-                ignore = True
-
-        if not ignore:
-            sys.stderr.write(path + '\n')
+        path_and_details, issue = pair
+        path = path_and_details.split(':')[0]
+        path = Path(path).relative_to('.')
+        if not any(
+            fnmatch.fnmatch(str(path), skip_pattern)
+            for skip_pattern in skip
+        ):
+            sys.stderr.write(str(path) + '\n')
             sys.stderr.write(issue + '\n')
             real_errors.append(pair)
 

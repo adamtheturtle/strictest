@@ -19,7 +19,7 @@ def lint_init_files(skip, path, src) -> None:
     they should run on.
     """
     missing_files = set()
-    for directory in src:
+    for directory in path:
         files = directory.glob('**/*.py')
         for python_file in files:
             parent = python_file.parent
@@ -156,7 +156,7 @@ def lint(skip, src) -> None:
     """
     XXX
     """
-    path = '.'
+    path = Path('.')
     lint_init_files(skip=skip, path=path, src=src)
     # lint_isort(skip=skip, path=path, src=src)
     # lint_check_manifest(skip=skip, path=path, src=src)

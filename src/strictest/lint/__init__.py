@@ -18,12 +18,25 @@ def lint_init_files(skip, path, src) -> None:
     If ``__init__`` files are missing, linters may not run on all files that
     they should run on.
     """
+    missing_files = set()
     for directory in src:
         files = directory.glob('**/*.py')
         for python_file in files:
             parent = python_file.parent
             expected_init = parent / '__init__.py'
-            assert expected_init.exists()
+            if not expected_init.exists():
+                missing_files.add(expected_init)
+
+    if missing_files:
+        for expected_init in missing_files:
+            message = (
+                '`__init__.py` files are expected next to Python files. '
+                'The file "{expected_init}" was expected and it does not '
+                'exist.\n'
+            ).format(expected_init=expected_init)
+            sys.stderr.write(message)
+    if missing_files:
+        sys.exit(1)
 
 
 def lint_isort(skip, path, src):

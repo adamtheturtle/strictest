@@ -12,6 +12,44 @@ import click
 import click_pathlib
 
 
+def lint_pydocstyle(skip, path, src, tests) -> None:
+    """
+    Run ``pydocstyle`` and ignore errors.
+    We could use the "match" ``pydocstyle`` setting, but this involves regular
+    expressions and got too complex.
+    """
+    args = ['pydocstyle']
+    pydocstyle_result = subprocess.run(args=args, stdout=subprocess.PIPE)
+    lines = pydocstyle_result.stdout.decode().strip().split('\n')
+    path_issue_pairs = []
+    for item_number in range(int(len(lines) / 2)):
+        path = lines[item_number * 2] * 2
+        issue = lines[item_number * 2 + 1]
+        path_issue_pairs.append((path, issue))
+
+    real_errors = []
+    ignored_path_substrings = (
+        '_vendor',
+        '_version.py',
+        'versioneer.py',
+        './tests',
+    )
+    for pair in path_issue_pairs:
+        path, issue = pair
+        ignore = False
+        for substring in ignored_path_substrings:
+            if substring in path:
+                ignore = True
+
+        if not ignore:
+            sys.stderr.write(path + '\n')
+            sys.stderr.write(issue + '\n')
+            real_errors.append(pair)
+
+    if real_errors:
+        sys.exit(1)
+
+
 def lint_init_files(skip, path, src, tests) -> None:
     """
     ``__init__`` files exist where they should do.
@@ -175,6 +213,7 @@ def lint(skip, src, tests) -> None:
     XXX
     """
     path = Path('.')
+    lint_pydocstyle(skip=skip, path=path, src=src, tests=tests)
     lint_init_files(skip=skip, path=path, src=src, tests=tests)
     lint_isort(skip=skip, path=path, src=src, tests=tests)
     lint_check_manifest(skip=skip, path=path, src=src, tests=tests)

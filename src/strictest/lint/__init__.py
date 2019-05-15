@@ -34,8 +34,7 @@ def lint_pydocstyle(skip, path, src, tests) -> None:
         path = Path(path).relative_to('.')
         location = path_and_details.split(':')[1]
         if not any(
-            fnmatch.fnmatch(str(path), skip_pattern)
-            for skip_pattern in skip
+            fnmatch.fnmatch(str(path), skip_pattern) for skip_pattern in skip
         ):
             sys.stderr.write(str(path) + '\n')
             sys.stderr.write('\tLine ' + location + '\n')
@@ -101,6 +100,9 @@ def lint_isort(skip, path, src, tests):
 
 
 def lint_check_manifest(skip, path, src, tests):
+    """
+    Check that the manifest file has everything not explicitly ignored.
+    """
     result = check_manifest.check_manifest(path)
     if not result:
         sys.exit(1)
@@ -138,6 +140,9 @@ def lint_yapf(skip, path, src, tests) -> None:
 
 
 def lint_vulture(skip, path, src, tests):
+    """
+    Check for dead code.
+    """
     vulture_args = [
         'vulture',
         '--min-confidence=100',

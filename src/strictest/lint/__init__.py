@@ -222,6 +222,7 @@ def lint(skip, src, tests) -> None:
     Run all linters.
     """
     path = Path('.')
+    lint_mypy(skip=skip, path=path, src=src, tests=tests)
     lint_pydocstyle(skip=skip, path=path, src=src, tests=tests)
     lint_init_files(skip=skip, path=path, src=src, tests=tests)
     lint_isort(skip=skip, path=path, src=src, tests=tests)

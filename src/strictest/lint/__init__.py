@@ -1,5 +1,5 @@
 """
-XXX
+Tools for linting.
 """
 
 import fnmatch
@@ -80,6 +80,9 @@ def lint_init_files(skip, path, src, tests) -> None:
 
 
 def lint_isort(skip, path, src, tests):
+    """
+    Check for import sort order.
+    """
     isort_args = [
         'isort',
         '--recursive',
@@ -104,6 +107,9 @@ def lint_check_manifest(skip, path, src, tests):
 
 
 def lint_flake8(skip, path, src, tests):
+    """
+    Check for formatting issues.
+    """
     flake8_args = ['flake8', path]
     if skip:
         flake8_args.append('--exclude=' + ','.join(skip))
@@ -113,6 +119,9 @@ def lint_flake8(skip, path, src, tests):
 
 
 def lint_yapf(skip, path, src, tests) -> None:
+    """
+    Check for formatting issues.
+    """
     yapf_args = [
         'yapf',
         '--style',
@@ -142,11 +151,10 @@ def lint_vulture(skip, path, src, tests):
 
 
 def lint_pyroma(skip, path, src, tests):
-    pyroma_args = [
-        'pyroma',
-        '--min=10',
-        path,
-    ]
+    """
+    Check for issues with ``setup.py``.
+    """
+    pyroma_args = ['pyroma', '--min=10', path]
     pyroma_result = subprocess.run(args=pyroma_args)
     if not pyroma_result.returncode == 0:
         sys.exit(pyroma_result.returncode)
@@ -154,7 +162,7 @@ def lint_pyroma(skip, path, src, tests):
 
 def lint_pip_extra_reqs(skip, path, src, tests):
     """
-    XXX
+    Check for extra requirements in ``requirements.txt``.
     """
     pip_extra_reqs_args = [
         'pip-extra-reqs',
@@ -167,7 +175,7 @@ def lint_pip_extra_reqs(skip, path, src, tests):
 
 def lint_pip_missing_reqs(skip, path, src, tests):
     """
-    XXX
+    Check for missing requirements in ``requirements.txt``.
     """
     pip_missing_reqs_args = [
         'pip-missing-reqs',
@@ -206,7 +214,7 @@ def lint_pip_missing_reqs(skip, path, src, tests):
 )
 def lint(skip, src, tests) -> None:
     """
-    XXX
+    Run all linters.
     """
     path = Path('.')
     lint_pydocstyle(skip=skip, path=path, src=src, tests=tests)

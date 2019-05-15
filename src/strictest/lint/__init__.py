@@ -1,5 +1,5 @@
 """
-XXX
+Tools for linting.
 """
 
 import fnmatch
@@ -10,6 +10,39 @@ from pathlib import Path
 import check_manifest
 import click
 import click_pathlib
+
+
+def lint_pydocstyle(skip, path, src, tests) -> None:
+    """
+    Run ``pydocstyle`` and ignore errors.
+    We could use the "match" ``pydocstyle`` setting, but this involves regular
+    expressions and got too complex.
+    """
+    args = ['pydocstyle', str(path)]
+    pydocstyle_result = subprocess.run(args=args, stdout=subprocess.PIPE)
+    lines = pydocstyle_result.stdout.decode().strip().split('\n')
+    path_issue_pairs = []
+    for item_number in range(int(len(lines) / 2)):
+        path = lines[item_number * 2] * 2
+        issue = lines[item_number * 2 + 1]
+        path_issue_pairs.append((path, issue))
+
+    real_errors = []
+    for pair in path_issue_pairs:
+        path_and_details, issue = pair
+        path = path_and_details.split(':')[0]
+        path = Path(path).relative_to('.')
+        location = path_and_details.split(':')[1]
+        if not any(
+            fnmatch.fnmatch(str(path), skip_pattern) for skip_pattern in skip
+        ):
+            sys.stderr.write(str(path) + '\n')
+            sys.stderr.write('\tLine ' + location + '\n')
+            sys.stderr.write(issue + '\n')
+            real_errors.append(pair)
+
+    if real_errors:
+        sys.exit(1)
 
 
 def lint_init_files(skip, path, src, tests) -> None:
@@ -46,6 +79,9 @@ def lint_init_files(skip, path, src, tests) -> None:
 
 
 def lint_isort(skip, path, src, tests):
+    """
+    Check for import sort order.
+    """
     isort_args = [
         'isort',
         '--recursive',
@@ -64,12 +100,18 @@ def lint_isort(skip, path, src, tests):
 
 
 def lint_check_manifest(skip, path, src, tests):
+    """
+    Check that the manifest file has everything not explicitly ignored.
+    """
     result = check_manifest.check_manifest(path)
     if not result:
         sys.exit(1)
 
 
 def lint_flake8(skip, path, src, tests):
+    """
+    Check for formatting issues.
+    """
     flake8_args = ['flake8', path]
     if skip:
         flake8_args.append('--exclude=' + ','.join(skip))
@@ -79,6 +121,9 @@ def lint_flake8(skip, path, src, tests):
 
 
 def lint_yapf(skip, path, src, tests) -> None:
+    """
+    Check for formatting issues.
+    """
     yapf_args = [
         'yapf',
         '--style',
@@ -95,6 +140,9 @@ def lint_yapf(skip, path, src, tests) -> None:
 
 
 def lint_vulture(skip, path, src, tests):
+    """
+    Check for dead code.
+    """
     vulture_args = [
         'vulture',
         '--min-confidence=100',
@@ -108,11 +156,10 @@ def lint_vulture(skip, path, src, tests):
 
 
 def lint_pyroma(skip, path, src, tests):
-    pyroma_args = [
-        'pyroma',
-        '--min=10',
-        path,
-    ]
+    """
+    Check for issues with ``setup.py``.
+    """
+    pyroma_args = ['pyroma', '--min=10', path]
     pyroma_result = subprocess.run(args=pyroma_args)
     if not pyroma_result.returncode == 0:
         sys.exit(pyroma_result.returncode)
@@ -120,7 +167,7 @@ def lint_pyroma(skip, path, src, tests):
 
 def lint_pip_extra_reqs(skip, path, src, tests):
     """
-    XXX
+    Check for extra requirements in ``requirements.txt``.
     """
     pip_extra_reqs_args = [
         'pip-extra-reqs',
@@ -133,7 +180,7 @@ def lint_pip_extra_reqs(skip, path, src, tests):
 
 def lint_pip_missing_reqs(skip, path, src, tests):
     """
-    XXX
+    Check for missing requirements in ``requirements.txt``.
     """
     pip_missing_reqs_args = [
         'pip-missing-reqs',
@@ -172,9 +219,10 @@ def lint_pip_missing_reqs(skip, path, src, tests):
 )
 def lint(skip, src, tests) -> None:
     """
-    XXX
+    Run all linters.
     """
     path = Path('.')
+    lint_pydocstyle(skip=skip, path=path, src=src, tests=tests)
     lint_init_files(skip=skip, path=path, src=src, tests=tests)
     lint_isort(skip=skip, path=path, src=src, tests=tests)
     lint_check_manifest(skip=skip, path=path, src=src, tests=tests)

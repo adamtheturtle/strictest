@@ -78,6 +78,42 @@ def lint_init_files(skip, path, src, tests) -> None:
         sys.exit(1)
 
 
+def lint_mypy(skip, path, src, tests):
+    directories = list(src + tests)
+    mypy_args = [
+        'mypy',
+        '--check-untyped-defs',
+        '--disallow-incomplete-defs',
+        '--disallow-subclassing-any',
+        '--disallow-untyped-defs',
+        '--follow-imports=normal',
+        '--ignore-missing-imports',
+        '--no-implicit-optional',
+        '--strict-equality',
+        '--strict-optional',
+        '--warn-no-return',
+        '--warn-redundant-casts',
+        '--warn-return-any',
+        '--warn-unused-configs',
+        '--warn-unused-ignores',
+    ] + directories
+    result = subprocess.run(args=mypy_args, stdout=subprocess.PIPE)
+    result_lines = result.stdout.decode().strip().split('\n')
+    error_lines = []
+    for line in result_lines:
+        source_file = line.split(':')[0]
+        if not any(
+            fnmatch.fnmatch(source_file, skip_pattern) for skip_pattern in skip
+        ):
+            error_lines.append(line)
+    # error_lines = [
+    #     line for line in result_lines
+    #     if not any(line.startswith(path) for path in ignore_paths)
+    # ]
+    print('\n'.join(error_lines))
+    if error_lines:
+        sys.exit(1)
+
 def lint_isort(skip, path, src, tests):
     """
     Check for import sort order.
@@ -223,6 +259,7 @@ def lint(skip, src, tests) -> None:
     """
     path = Path('.')
     lint_mypy(skip=skip, path=path, src=src, tests=tests)
+    return
     lint_pydocstyle(skip=skip, path=path, src=src, tests=tests)
     lint_init_files(skip=skip, path=path, src=src, tests=tests)
     lint_isort(skip=skip, path=path, src=src, tests=tests)

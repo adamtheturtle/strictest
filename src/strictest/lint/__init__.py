@@ -18,6 +18,7 @@ def lint_pydocstyle(skip, path, src, tests) -> None:
     We could use the "match" ``pydocstyle`` setting, but this involves regular
     expressions and got too complex.
     """
+    # TODO add configuration from setup.cfg
     args = ['pydocstyle', str(path)]
     pydocstyle_result = subprocess.run(args=args, stdout=subprocess.PIPE)
     lines = pydocstyle_result.stdout.decode().strip().split('\n')

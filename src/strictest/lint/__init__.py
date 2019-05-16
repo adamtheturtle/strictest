@@ -117,6 +117,7 @@ def lint_mypy(
     """
     Run type checking.
     """
+    import pdb; pdb.set_trace()
     # TODO also admin?
     directories = list(src + tests)
     mypy_args = [
@@ -136,7 +137,7 @@ def lint_mypy(
         '--warn-return-any',
         '--warn-unused-configs',
         '--warn-unused-ignores',
-    ] + [str(directory) for directory in directories]
+    ] + '*.py' + [str(directory) for directory in directories]
     result = subprocess.run(args=mypy_args, stdout=subprocess.PIPE)
     result_lines = result.stdout.decode().strip().split('\n')
     error_lines = []

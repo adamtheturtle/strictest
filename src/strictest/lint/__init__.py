@@ -14,7 +14,10 @@ import click_pathlib
 
 
 def lint_pydocstyle(
-    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+    skip: Tuple[str],
+    path: Path,
+    src: Tuple[Path],
+    tests: Tuple[Path],
 ) -> None:
     """
     Run ``pydocstyle`` and ignore errors.
@@ -22,7 +25,7 @@ def lint_pydocstyle(
     expressions and got too complex.
     """
     ignore_codes = [
-        # No summary lines
+        # We do not require summary lines.
         'D200',
         'D205',
         'D400',
@@ -30,15 +33,16 @@ def lint_pydocstyle(
         # section in a docstring.
         'D203',
         'D413',
-        # We don't need docstrings to start at the first line
+        # We don't need docstrings to start at the first line.
         'D212',
-        # Allow blank lines after function docstrings
+        # Allow blank lines after function docstrings.
         'D202',
-        # Section names do not need to end in newlines
+        # Section names do not need to end in newlines.
         'D406',
-        # Section names do not need dashed underlines
+        # Section names do not need dashed underlines.
         'D407',
-        # Click uses \b to stop wrapping, so we must allow backslashes in docstrings
+        # Click uses \b to stop wrapping, so we must allow backslashes in
+        # docstrings.
         'D301',
         # We do not care about the imperative mood.
         'D401',
@@ -46,33 +50,31 @@ def lint_pydocstyle(
     args = ['pydocstyle', str(path), '--ignore', ','.join(ignore_codes)]
     pydocstyle_result = subprocess.run(args=args, stdout=subprocess.PIPE)
     lines = pydocstyle_result.stdout.decode().strip().split('\n')
-    path_issue_pairs = []
+    real_errors = False
     for item_number in range(int(len(lines) / 2)):
-        path = lines[item_number * 2] * 2
+        issue_path_and_details = lines[item_number * 2] * 2
         issue = lines[item_number * 2 + 1]
-        path_issue_pairs.append((path, issue))
-
-    real_errors = []
-    for pair in path_issue_pairs:
-        path_and_details, issue = pair
-        import pdb; pdb.set_trace()
-        path = path_and_details.split(':')[0]
-        path = Path(path).relative_to('.')
-        location = path_and_details.split(':')[1]
+        issue_path = issue_path_and_details.split(':')[0]
+        issue_path = Path(issue_path).relative_to('.')
+        location = issue_path_and_details.split(':')[1]
         if not any(
-            fnmatch.fnmatch(str(path), skip_pattern) for skip_pattern in skip
+            fnmatch.fnmatch(str(issue_path), skip_pattern)
+            for skip_pattern in skip
         ):
-            sys.stderr.write(str(path) + '\n')
+            sys.stderr.write(str(issue_path) + '\n')
             sys.stderr.write('\tLine ' + location + '\n')
             sys.stderr.write(issue + '\n')
-            real_errors.append(pair)
+            real_errors = True
 
     if real_errors:
         sys.exit(1)
 
 
 def lint_init_files(
-    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+    skip: Tuple[str],
+    path: Path,
+    src: Tuple[Path],
+    tests: Tuple[Path],
 ) -> None:
     """
     ``__init__`` files exist where they should do.
@@ -107,8 +109,14 @@ def lint_init_files(
 
 
 def lint_mypy(
-    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+    skip: Tuple[str],
+    path: Path,
+    src: Tuple[Path],
+    tests: Tuple[Path],
 ) -> None:
+    """
+    Run type checking.
+    """
     # TODO also admin?
     directories = list(src + tests)
     mypy_args = [
@@ -148,7 +156,10 @@ def lint_mypy(
 
 
 def lint_isort(
-    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+    skip: Tuple[str],
+    path: Path,
+    src: Tuple[Path],
+    tests: Tuple[Path],
 ) -> None:
     """
     Check for import sort order.
@@ -171,7 +182,10 @@ def lint_isort(
 
 
 def lint_check_manifest(
-    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+    skip: Tuple[str],
+    path: Path,
+    src: Tuple[Path],
+    tests: Tuple[Path],
 ) -> None:
     """
     Check that the manifest file has everything not explicitly ignored.
@@ -182,7 +196,10 @@ def lint_check_manifest(
 
 
 def lint_flake8(
-    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+    skip: Tuple[str],
+    path: Path,
+    src: Tuple[Path],
+    tests: Tuple[Path],
 ) -> None:
     """
     Check for formatting issues.
@@ -196,7 +213,10 @@ def lint_flake8(
 
 
 def lint_yapf(
-    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+    skip: Tuple[str],
+    path: Path,
+    src: Tuple[Path],
+    tests: Tuple[Path],
 ) -> None:
     """
     Check for formatting issues.
@@ -217,7 +237,10 @@ def lint_yapf(
 
 
 def lint_vulture(
-    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+    skip: Tuple[str],
+    path: Path,
+    src: Tuple[Path],
+    tests: Tuple[Path],
 ) -> None:
     """
     Check for dead code.
@@ -235,7 +258,10 @@ def lint_vulture(
 
 
 def lint_pyroma(
-    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+    skip: Tuple[str],
+    path: Path,
+    src: Tuple[Path],
+    tests: Tuple[Path],
 ) -> None:
     """
     Check for issues with ``setup.py``.
@@ -247,7 +273,10 @@ def lint_pyroma(
 
 
 def lint_pip_extra_reqs(
-    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+    skip: Tuple[str],
+    path: Path,
+    src: Tuple[Path],
+    tests: Tuple[Path],
 ) -> None:
     """
     Check for extra requirements in ``requirements.txt``.
@@ -262,7 +291,10 @@ def lint_pip_extra_reqs(
 
 
 def lint_pip_missing_reqs(
-    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+    skip: Tuple[str],
+    path: Path,
+    src: Tuple[Path],
+    tests: Tuple[Path],
 ) -> None:
     """
     Check for missing requirements in ``requirements.txt``.

@@ -13,10 +13,6 @@ fix-yapf:
 		--exclude='**/_version.py' \
 		.
 
-.PHONY: mypy
-mypy:
-	mypy *.py src/ admin/
-
 .PHONY: pylint
 pylint:
 	pylint *.py src/ tests/ admin/
@@ -31,7 +27,9 @@ strictest:
 	    --skip='**/_vendor/*' \
 	    --skip='versioneer.py' \
 	    --skip='**/_version.py' \
-	    --src='src'
+	    --src='src' \
+	    --non-src-package 'tests' \
+	    --non-src-package 'admin'
 
 .PHONY: autoflake
 autoflake:

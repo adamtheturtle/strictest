@@ -6,13 +6,14 @@ import fnmatch
 import subprocess
 import sys
 from pathlib import Path
+from typing import Tuple
 
 import check_manifest
 import click
 import click_pathlib
 
 
-def lint_pydocstyle(skip, path, src, tests) -> None:
+def lint_pydocstyle(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
     """
     Run ``pydocstyle`` and ignore errors.
     We could use the "match" ``pydocstyle`` setting, but this involves regular
@@ -67,7 +68,7 @@ def lint_pydocstyle(skip, path, src, tests) -> None:
         sys.exit(1)
 
 
-def lint_init_files(skip, path, src, tests) -> None:
+def lint_init_files(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
     """
     ``__init__`` files exist where they should do.
 
@@ -100,7 +101,7 @@ def lint_init_files(skip, path, src, tests) -> None:
         sys.exit(1)
 
 
-def lint_mypy(skip, path, src, tests):
+def lint_mypy(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
     # TODO also admin?
     directories = list(src + tests)
     mypy_args = [
@@ -138,7 +139,7 @@ def lint_mypy(skip, path, src, tests):
     if error_lines:
         sys.exit(1)
 
-def lint_isort(skip, path, src, tests):
+def lint_isort(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
     """
     Check for import sort order.
     """
@@ -159,7 +160,7 @@ def lint_isort(skip, path, src, tests):
         sys.exit(isort_result.returncode)
 
 
-def lint_check_manifest(skip, path, src, tests):
+def lint_check_manifest(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
     """
     Check that the manifest file has everything not explicitly ignored.
     """
@@ -168,7 +169,7 @@ def lint_check_manifest(skip, path, src, tests):
         sys.exit(1)
 
 
-def lint_flake8(skip, path, src, tests):
+def lint_flake8(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
     """
     Check for formatting issues.
     """
@@ -180,7 +181,7 @@ def lint_flake8(skip, path, src, tests):
         sys.exit(flake8_result.returncode)
 
 
-def lint_yapf(skip, path, src, tests) -> None:
+def lint_yapf(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
     """
     Check for formatting issues.
     """
@@ -199,7 +200,7 @@ def lint_yapf(skip, path, src, tests) -> None:
         sys.exit(yapf_result.returncode)
 
 
-def lint_vulture(skip, path, src, tests):
+def lint_vulture(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
     """
     Check for dead code.
     """
@@ -215,7 +216,7 @@ def lint_vulture(skip, path, src, tests):
         sys.exit(vulture_result.returncode)
 
 
-def lint_pyroma(skip, path, src, tests):
+def lint_pyroma(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
     """
     Check for issues with ``setup.py``.
     """
@@ -225,7 +226,7 @@ def lint_pyroma(skip, path, src, tests):
         sys.exit(pyroma_result.returncode)
 
 
-def lint_pip_extra_reqs(skip, path, src, tests):
+def lint_pip_extra_reqs(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
     """
     Check for extra requirements in ``requirements.txt``.
     """
@@ -238,7 +239,7 @@ def lint_pip_extra_reqs(skip, path, src, tests):
         sys.exit(pip_extra_reqs_result.returncode)
 
 
-def lint_pip_missing_reqs(skip, path, src, tests):
+def lint_pip_missing_reqs(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
     """
     Check for missing requirements in ``requirements.txt``.
     """
@@ -283,7 +284,6 @@ def lint(skip, src, tests) -> None:
     """
     path = Path('.')
     lint_mypy(skip=skip, path=path, src=src, tests=tests)
-    return
     lint_pydocstyle(skip=skip, path=path, src=src, tests=tests)
     lint_init_files(skip=skip, path=path, src=src, tests=tests)
     lint_isort(skip=skip, path=path, src=src, tests=tests)

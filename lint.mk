@@ -27,7 +27,9 @@ strictest:
 	    --skip='**/_vendor/*' \
 	    --skip='versioneer.py' \
 	    --skip='**/_version.py' \
-	    --src='src'
+	    --src='src' \
+	    --non-src-package 'tests' \
+	    --non-src-package 'admin'
 
 .PHONY: autoflake
 autoflake:

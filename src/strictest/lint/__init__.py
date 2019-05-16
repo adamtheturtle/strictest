@@ -17,7 +17,7 @@ def lint_pydocstyle(
     skip: Tuple[str],
     path: Path,
     src: Tuple[Path],
-    tests: Tuple[Path],
+    non_src_package: Tuple[Path],
 ) -> None:
     """
     Run ``pydocstyle`` and ignore errors.
@@ -74,7 +74,7 @@ def lint_init_files(
     skip: Tuple[str],
     path: Path,
     src: Tuple[Path],
-    tests: Tuple[Path],
+    non_src_package: Tuple[Path],
 ) -> None:
     """
     ``__init__`` files exist where they should do.
@@ -83,7 +83,7 @@ def lint_init_files(
     they should run on.
     """
     missing_files = set()
-    directories = src + tests
+    directories = src + non_src_package
     for directory in directories:
         files = directory.glob('**/*.py')
         for python_file in files:
@@ -112,14 +112,12 @@ def lint_mypy(
     skip: Tuple[str],
     path: Path,
     src: Tuple[Path],
-    tests: Tuple[Path],
+    non_src_package: Tuple[Path],
 ) -> None:
     """
     Run type checking.
     """
-    import pdb; pdb.set_trace()
-    # TODO also admin?
-    directories = list(src + tests)
+    directories = list(src + non_src_package)
     mypy_args = [
         'mypy',
         '--check-untyped-defs',
@@ -137,7 +135,8 @@ def lint_mypy(
         '--warn-return-any',
         '--warn-unused-configs',
         '--warn-unused-ignores',
-    ] + '*.py' + [str(directory) for directory in directories]
+    ] + list(str(item) for item in path.glob('*.py')
+             ) + [str(directory) for directory in directories]
     result = subprocess.run(args=mypy_args, stdout=subprocess.PIPE)
     result_lines = result.stdout.decode().strip().split('\n')
     error_lines = []
@@ -147,10 +146,6 @@ def lint_mypy(
             fnmatch.fnmatch(source_file, skip_pattern) for skip_pattern in skip
         ):
             error_lines.append(line)
-    # error_lines = [
-    #     line for line in result_lines
-    #     if not any(line.startswith(path) for path in ignore_paths)
-    # ]
     print('\n'.join(error_lines))
     if error_lines:
         sys.exit(1)
@@ -160,7 +155,7 @@ def lint_isort(
     skip: Tuple[str],
     path: Path,
     src: Tuple[Path],
-    tests: Tuple[Path],
+    non_src_package: Tuple[Path],
 ) -> None:
     """
     Check for import sort order.
@@ -177,7 +172,7 @@ def lint_isort(
     ]
     for item in skip:
         isort_args.append('--skip-glob=' + item)
-    isort_result = subprocess.run(args=isort_args)
+    isort_result = subprocess.run(args=isort_args, stdout=subprocess.PIPE)
     if not isort_result.returncode == 0:
         sys.exit(isort_result.returncode)
 
@@ -186,7 +181,7 @@ def lint_check_manifest(
     skip: Tuple[str],
     path: Path,
     src: Tuple[Path],
-    tests: Tuple[Path],
+    non_src_package: Tuple[Path],
 ) -> None:
     """
     Check that the manifest file has everything not explicitly ignored.
@@ -200,7 +195,7 @@ def lint_flake8(
     skip: Tuple[str],
     path: Path,
     src: Tuple[Path],
-    tests: Tuple[Path],
+    non_src_package: Tuple[Path],
 ) -> None:
     """
     Check for formatting issues.
@@ -208,7 +203,7 @@ def lint_flake8(
     flake8_args = ['flake8', str(path)]
     if skip:
         flake8_args.append('--exclude=' + ','.join(skip))
-    flake8_result = subprocess.run(args=flake8_args)
+    flake8_result = subprocess.run(args=flake8_args, stdout=subprocess.PIPE)
     if not flake8_result.returncode == 0:
         sys.exit(flake8_result.returncode)
 
@@ -217,7 +212,7 @@ def lint_yapf(
     skip: Tuple[str],
     path: Path,
     src: Tuple[Path],
-    tests: Tuple[Path],
+    non_src_package: Tuple[Path],
 ) -> None:
     """
     Check for formatting issues.
@@ -232,7 +227,7 @@ def lint_yapf(
     ]
     for item in skip:
         yapf_args.append('--exclude=' + item)
-    yapf_result = subprocess.run(args=yapf_args)
+    yapf_result = subprocess.run(args=yapf_args, stdout=subprocess.PIPE)
     if not yapf_result.returncode == 0:
         sys.exit(yapf_result.returncode)
 
@@ -241,7 +236,7 @@ def lint_vulture(
     skip: Tuple[str],
     path: Path,
     src: Tuple[Path],
-    tests: Tuple[Path],
+    non_src_package: Tuple[Path],
 ) -> None:
     """
     Check for dead code.
@@ -253,7 +248,7 @@ def lint_vulture(
     ]
     if skip:
         vulture_args.append('--exclude=' + ','.join(skip))
-    vulture_result = subprocess.run(args=vulture_args)
+    vulture_result = subprocess.run(args=vulture_args, stdout=subprocess.PIPE)
     if not vulture_result.returncode == 0:
         sys.exit(vulture_result.returncode)
 
@@ -262,13 +257,13 @@ def lint_pyroma(
     skip: Tuple[str],
     path: Path,
     src: Tuple[Path],
-    tests: Tuple[Path],
+    non_src_package: Tuple[Path],
 ) -> None:
     """
     Check for issues with ``setup.py``.
     """
     pyroma_args = ['pyroma', '--min=10', str(path)]
-    pyroma_result = subprocess.run(args=pyroma_args)
+    pyroma_result = subprocess.run(args=pyroma_args, stdout=subprocess.PIPE)
     if not pyroma_result.returncode == 0:
         sys.exit(pyroma_result.returncode)
 
@@ -277,7 +272,7 @@ def lint_pip_extra_reqs(
     skip: Tuple[str],
     path: Path,
     src: Tuple[Path],
-    tests: Tuple[Path],
+    non_src_package: Tuple[Path],
 ) -> None:
     """
     Check for extra requirements in ``requirements.txt``.
@@ -286,7 +281,10 @@ def lint_pip_extra_reqs(
         'pip-extra-reqs',
         ' '.join([str(item) for item in src]),
     ]
-    pip_extra_reqs_result = subprocess.run(args=pip_extra_reqs_args)
+    pip_extra_reqs_result = subprocess.run(
+        args=pip_extra_reqs_args,
+        stdout=subprocess.PIPE,
+    )
     if not pip_extra_reqs_result.returncode == 0:
         sys.exit(pip_extra_reqs_result.returncode)
 
@@ -295,7 +293,7 @@ def lint_pip_missing_reqs(
     skip: Tuple[str],
     path: Path,
     src: Tuple[Path],
-    tests: Tuple[Path],
+    non_src_package: Tuple[Path],
 ) -> None:
     """
     Check for missing requirements in ``requirements.txt``.
@@ -304,7 +302,10 @@ def lint_pip_missing_reqs(
         'pip-missing-reqs',
         ' '.join([str(item) for item in src]),
     ]
-    pip_missing_reqs_result = subprocess.run(args=pip_missing_reqs_args)
+    pip_missing_reqs_result = subprocess.run(
+        args=pip_missing_reqs_args,
+        stdout=subprocess.PIPE,
+    )
     if not pip_missing_reqs_result.returncode == 0:
         sys.exit(pip_missing_reqs_result.returncode)
 
@@ -314,7 +315,6 @@ def lint_pip_missing_reqs(
 @click.option(
     '--src',
     multiple=True,
-    default=('src', ),
     help='Path to src directories',
     type=click_pathlib.Path(
         exists=True,
@@ -324,10 +324,9 @@ def lint_pip_missing_reqs(
     ),
 )
 @click.option(
-    '--tests',
+    '--non-src-package',
     multiple=True,
-    default=('tests', ),
-    help='Path to test directories',
+    help='Path to a Python package to lint which is not the source directory',
     type=click_pathlib.Path(
         exists=True,
         dir_okay=True,
@@ -335,19 +334,32 @@ def lint_pip_missing_reqs(
         resolve_path=True,
     ),
 )
-def lint(skip: Tuple[str], src: Tuple[Path], tests: Tuple[Path]) -> None:
+def lint(
+    skip: Tuple[str],
+    src: Tuple[Path],
+    non_src_package: Tuple[Path],
+) -> None:
     """
     Run all linters.
     """
     path = Path('.')
-    lint_mypy(skip=skip, path=path, src=src, tests=tests)
-    lint_pydocstyle(skip=skip, path=path, src=src, tests=tests)
-    lint_init_files(skip=skip, path=path, src=src, tests=tests)
-    lint_isort(skip=skip, path=path, src=src, tests=tests)
-    lint_check_manifest(skip=skip, path=path, src=src, tests=tests)
-    lint_flake8(skip=skip, path=path, src=src, tests=tests)
-    lint_yapf(skip=skip, path=path, src=src, tests=tests)
-    lint_vulture(skip=skip, path=path, src=src, tests=tests)
-    lint_pyroma(skip=skip, path=path, src=src, tests=tests)
-    lint_pip_extra_reqs(skip=skip, path=path, src=src, tests=tests)
-    lint_pip_missing_reqs(skip=skip, path=path, src=src, tests=tests)
+    linters = [
+        lint_mypy,
+        lint_pydocstyle,
+        lint_init_files,
+        lint_isort,
+        lint_check_manifest,
+        lint_flake8,
+        lint_yapf,
+        lint_vulture,
+        lint_pyroma,
+        lint_pip_extra_reqs,
+        lint_pip_missing_reqs,
+    ]
+    for linter in linters:
+        linter(
+            skip=skip,
+            path=path,
+            src=src,
+            non_src_package=non_src_package,
+        )

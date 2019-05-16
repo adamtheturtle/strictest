@@ -18,8 +18,29 @@ def lint_pydocstyle(skip, path, src, tests) -> None:
     We could use the "match" ``pydocstyle`` setting, but this involves regular
     expressions and got too complex.
     """
-    # TODO add configuration from setup.cfg
-    args = ['pydocstyle', str(path)]
+    ignore_codes = [
+        # No summary lines
+        'D200',
+        'D205',
+        'D400',
+        # We don't want blank lines before class docstrings or after the last
+        # section in a docstring.
+        'D203',
+        'D413',
+        # We don't need docstrings to start at the first line
+        'D212',
+        # Allow blank lines after function docstrings
+        'D202',
+        # Section names do not need to end in newlines
+        'D406',
+        # Section names do not need dashed underlines
+        'D407',
+        # Click uses \b to stop wrapping, so we must allow backslashes in docstrings
+        'D301',
+        # We do not care about the imperative mood.
+        'D401',
+    ]
+    args = ['pydocstyle', str(path), '--ignore', ','.join(ignore_codes)]
     pydocstyle_result = subprocess.run(args=args, stdout=subprocess.PIPE)
     lines = pydocstyle_result.stdout.decode().strip().split('\n')
     path_issue_pairs = []

@@ -55,6 +55,7 @@ def lint_pydocstyle(
     real_errors = []
     for pair in path_issue_pairs:
         path_and_details, issue = pair
+        import pdb; pdb.set_trace()
         path = path_and_details.split(':')[0]
         path = Path(path).relative_to('.')
         location = path_and_details.split(':')[1]
@@ -127,7 +128,7 @@ def lint_mypy(
         '--warn-return-any',
         '--warn-unused-configs',
         '--warn-unused-ignores',
-    ] + directories
+    ] + [str(directory) for directory in directories]
     result = subprocess.run(args=mypy_args, stdout=subprocess.PIPE)
     result_lines = result.stdout.decode().strip().split('\n')
     error_lines = []
@@ -160,7 +161,7 @@ def lint_isort(
         '--multi-line=3',
         '--trailing-comma',
         '--dont-skip=__init__.py',
-        path,
+        str(path),
     ]
     for item in skip:
         isort_args.append('--skip-glob=' + item)
@@ -186,7 +187,7 @@ def lint_flake8(
     """
     Check for formatting issues.
     """
-    flake8_args = ['flake8', path]
+    flake8_args = ['flake8', str(path)]
     if skip:
         flake8_args.append('--exclude=' + ','.join(skip))
     flake8_result = subprocess.run(args=flake8_args)
@@ -206,7 +207,7 @@ def lint_yapf(
         '{DEDENT_CLOSING_BRACKETS: true}',
         '--diff',
         '--recursive',
-        path,
+        str(path),
     ]
     for item in skip:
         yapf_args.append('--exclude=' + item)
@@ -224,7 +225,7 @@ def lint_vulture(
     vulture_args = [
         'vulture',
         '--min-confidence=100',
-        path,
+        str(path),
     ]
     if skip:
         vulture_args.append('--exclude=' + ','.join(skip))
@@ -239,7 +240,7 @@ def lint_pyroma(
     """
     Check for issues with ``setup.py``.
     """
-    pyroma_args = ['pyroma', '--min=10', path]
+    pyroma_args = ['pyroma', '--min=10', str(path)]
     pyroma_result = subprocess.run(args=pyroma_args)
     if not pyroma_result.returncode == 0:
         sys.exit(pyroma_result.returncode)
@@ -301,7 +302,7 @@ def lint_pip_missing_reqs(
         resolve_path=True,
     ),
 )
-def lint(skip, src, tests) -> None:
+def lint(skip: Tuple[str], src: Tuple[Path], tests: Tuple[Path]) -> None:
     """
     Run all linters.
     """

@@ -13,7 +13,9 @@ import click
 import click_pathlib
 
 
-def lint_pydocstyle(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
+def lint_pydocstyle(
+    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+) -> None:
     """
     Run ``pydocstyle`` and ignore errors.
     We could use the "match" ``pydocstyle`` setting, but this involves regular
@@ -68,7 +70,9 @@ def lint_pydocstyle(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple
         sys.exit(1)
 
 
-def lint_init_files(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
+def lint_init_files(
+    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+) -> None:
     """
     ``__init__`` files exist where they should do.
 
@@ -101,7 +105,9 @@ def lint_init_files(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple
         sys.exit(1)
 
 
-def lint_mypy(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
+def lint_mypy(
+    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+) -> None:
     # TODO also admin?
     directories = list(src + tests)
     mypy_args = [
@@ -139,7 +145,10 @@ def lint_mypy(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
     if error_lines:
         sys.exit(1)
 
-def lint_isort(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
+
+def lint_isort(
+    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+) -> None:
     """
     Check for import sort order.
     """
@@ -160,7 +169,9 @@ def lint_isort(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path
         sys.exit(isort_result.returncode)
 
 
-def lint_check_manifest(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
+def lint_check_manifest(
+    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+) -> None:
     """
     Check that the manifest file has everything not explicitly ignored.
     """
@@ -169,7 +180,9 @@ def lint_check_manifest(skip: Tuple[str], path: Path, src: Tuple[Path], tests: T
         sys.exit(1)
 
 
-def lint_flake8(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
+def lint_flake8(
+    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+) -> None:
     """
     Check for formatting issues.
     """
@@ -181,7 +194,9 @@ def lint_flake8(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Pat
         sys.exit(flake8_result.returncode)
 
 
-def lint_yapf(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
+def lint_yapf(
+    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+) -> None:
     """
     Check for formatting issues.
     """
@@ -200,7 +215,9 @@ def lint_yapf(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
         sys.exit(yapf_result.returncode)
 
 
-def lint_vulture(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
+def lint_vulture(
+    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+) -> None:
     """
     Check for dead code.
     """
@@ -216,7 +233,9 @@ def lint_vulture(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Pa
         sys.exit(vulture_result.returncode)
 
 
-def lint_pyroma(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
+def lint_pyroma(
+    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+) -> None:
     """
     Check for issues with ``setup.py``.
     """
@@ -226,7 +245,9 @@ def lint_pyroma(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Pat
         sys.exit(pyroma_result.returncode)
 
 
-def lint_pip_extra_reqs(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
+def lint_pip_extra_reqs(
+    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+) -> None:
     """
     Check for extra requirements in ``requirements.txt``.
     """
@@ -239,7 +260,9 @@ def lint_pip_extra_reqs(skip: Tuple[str], path: Path, src: Tuple[Path], tests: T
         sys.exit(pip_extra_reqs_result.returncode)
 
 
-def lint_pip_missing_reqs(skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]) -> None:
+def lint_pip_missing_reqs(
+    skip: Tuple[str], path: Path, src: Tuple[Path], tests: Tuple[Path]
+) -> None:
     """
     Check for missing requirements in ``requirements.txt``.
     """

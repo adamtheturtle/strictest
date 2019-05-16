@@ -1,3 +1,4 @@
 include versioneer.py
 include src/strictest/_version.py
 include src/strictest/py.typed
+include src/strictest/pylintrc

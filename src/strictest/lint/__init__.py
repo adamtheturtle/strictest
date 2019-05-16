@@ -79,6 +79,7 @@ def lint_init_files(skip, path, src, tests) -> None:
 
 
 def lint_mypy(skip, path, src, tests):
+    # TODO also admin?
     directories = list(src + tests)
     mypy_args = [
         'mypy',

@@ -85,6 +85,7 @@ def lint_mypy(skip, path, src, tests):
         '--check-untyped-defs',
         '--disallow-incomplete-defs',
         '--disallow-subclassing-any',
+        '--disallow-untyped-calls',
         '--disallow-untyped-defs',
         '--follow-imports=normal',
         '--ignore-missing-imports',

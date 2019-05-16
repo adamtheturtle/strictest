@@ -7,7 +7,6 @@ include lint.mk
 # We do not currently run pydocstyle as we have to ignore vendored items.
 lint: \
     strictest \
-    mypy \
     pylint \
     shellcheck
 

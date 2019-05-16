@@ -13,10 +13,6 @@ fix-yapf:
 		--exclude='**/_version.py' \
 		.
 
-.PHONY: mypy
-mypy:
-	mypy *.py src/ admin/
-
 .PHONY: pylint
 pylint:
 	pylint *.py src/ tests/ admin/

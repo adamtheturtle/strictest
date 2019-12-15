@@ -13,6 +13,33 @@ import click
 import click_pathlib
 
 
+def lint_pylint(
+    skip: Tuple[str],
+    path: Path,
+    src: Tuple[Path],
+    non_src_package: Tuple[Path],
+) -> None:
+    rcfile = Path(__file__).parent / 'pylintrc'
+    directories = src + non_src_package
+    pylint_args = [
+        'pylint',
+        '--rcfile',
+        str(rcfile),
+        '--output-format',
+        'parseableb',
+    ] + list(str(item) for item in path.glob('*.py')
+             ) + [str(directory) for directory in directories]
+    # for item in skip:
+    #     yapf_args.append('--exclude=' + item)
+    pylint_result = subprocess.run(
+        args=pylint_args,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    import pdb; pdb.set_trace()
+    # if not yapf_result.returncode == 0:
+    #     sys.exit(yapf_result.returncode)
+
 def lint_pydocstyle(
     skip: Tuple[str],
     path: Path,
@@ -344,17 +371,18 @@ def lint(
     """
     path = Path('.')
     linters = [
-        lint_mypy,
-        lint_pydocstyle,
-        lint_init_files,
-        lint_isort,
-        lint_check_manifest,
-        lint_flake8,
-        lint_yapf,
-        lint_vulture,
-        lint_pyroma,
-        lint_pip_extra_reqs,
-        lint_pip_missing_reqs,
+        lint_pylint,
+        # lint_mypy,
+        # lint_pydocstyle,
+        # lint_init_files,
+        # lint_isort,
+        # lint_check_manifest,
+        # lint_flake8,
+        # lint_yapf,
+        # lint_vulture,
+        # lint_pyroma,
+        # lint_pip_extra_reqs,
+        # lint_pip_missing_reqs,
     ]
     for linter in linters:
         linter(

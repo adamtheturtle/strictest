@@ -54,8 +54,8 @@ def lint_pydocstyle(
     for item_number in range(int(len(lines) / 2)):
         issue_path_and_details = lines[item_number * 2] * 2
         issue = lines[item_number * 2 + 1]
-        issue_path = issue_path_and_details.split(':')[0]
-        issue_path = Path(issue_path).relative_to('.')
+        issue_path_str = issue_path_and_details.split(':')[0]
+        issue_path = Path(issue_path_str).relative_to('.')
         location = issue_path_and_details.split(':')[1]
         if not any(
             fnmatch.fnmatch(str(issue_path), skip_pattern)
@@ -145,7 +145,8 @@ def lint_mypy(
         if not any(
             fnmatch.fnmatch(source_file, skip_pattern) for skip_pattern in skip
         ):
-            error_lines.append(line)
+            if not line.startswith('Success:'):
+                error_lines.append(line)
     print('\n'.join(error_lines))
     if error_lines:
         sys.exit(1)
@@ -357,6 +358,7 @@ def lint(
         lint_pip_missing_reqs,
     ]
     for linter in linters:
+        print(linter)
         linter(
             skip=skip,
             path=path,

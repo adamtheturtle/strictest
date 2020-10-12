@@ -7,8 +7,6 @@ from typing import List
 
 from setuptools import find_packages, setup
 
-import versioneer
-
 
 def _get_dependencies(requirements_file: Path) -> List[str]:
     """
@@ -37,12 +35,15 @@ PACKAGING_REQUIRES = _get_dependencies(
     requirements_file=Path('packaging-requirements.txt'),
 )
 
+SETUP_REQUIRES = _get_dependencies(
+    requirements_file=Path('setup-requirements.txt'),
+)
+
 LONG_DESCRIPTION = Path('README.rst').read_text()
 
 setup(
     name='strictest',
-    version=versioneer.get_version(),  # type: ignore
-    cmdclass=versioneer.get_cmdclass(),  # type: ignore
+    use_scm_version=True,
     author='Adam Dangoor',
     author_email='adamdangoor@gmail.com',
     description='A collection of linters configured to be very strict.',

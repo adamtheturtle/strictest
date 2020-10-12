@@ -7,8 +7,6 @@ include lint.mk
 # We do not currently run pydocstyle as we have to ignore vendored items.
 lint: \
     strictest \
-    pylint \
-    shellcheck
 
 # Fix some linting errors.
 .PHONY: fix-lint

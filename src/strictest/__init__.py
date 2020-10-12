@@ -4,7 +4,6 @@ Linters.
 
 import click
 
-from ._version import get_versions
 from .fix import fix
 from .lint import lint
 
@@ -20,6 +19,3 @@ def strictest() -> None:
 
 strictest.add_command(lint)
 strictest.add_command(fix)
-
-__version__ = get_versions()['version']  # type: ignore
-del get_versions
